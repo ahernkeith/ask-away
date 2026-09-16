@@ -1,312 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({
+      error: "Method not allowed"
+    });
+  }
 
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ask Away</title>
+  try {
+    const { question } = req.body || {};
 
-<style>
-*{box-sizing:border-box}
+    if (!question) {
+      return res.status(400).json({
+        error: "Please enter a question."
+      });
+    }
 
-body{
-margin:0;
-font-family:Arial,sans-serif;
-background:#f5f7fb;
-color:#222;
+    const response = await fetch(
+      "https://api.openai.com/v1/responses",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: "gpt-5.6-luna",
+          input: question
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return res.status(response.status).json({
+        error:
+          data?.error?.message ||
+          "OpenAI request failed."
+      });
+    }
+
+    const answer =
+      data?.output?.[0]?.content?.[0]?.text ||
+      "I didn't receive an answer.";
+
+    return res.status(200).json({
+      answer: answer
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      error: error.message ||
+        "Something went wrong."
+    });
+  }
 }
-
-.container{
-max-width:600px;
-margin:auto;
-padding:25px 18px;
-}
-
-h1{
-text-align:center;
-font-size:42px;
-margin:20px 0 5px;
-}
-
-.subtitle{
-text-align:center;
-color:#666;
-font-size:17px;
-margin-bottom:30px;
-}
-
-.ask-box,.answer{
-background:white;
-border-radius:22px;
-padding:20px;
-box-shadow:0 5px 25px rgba(0,0,0,.08);
-}
-
-textarea{
-width:100%;
-min-height:110px;
-border:2px solid #ddd;
-border-radius:15px;
-padding:15px;
-font-size:18px;
-resize:vertical;
-outline:none;
-}
-
-textarea:focus{
-border-color:#7c4dff;
-}
-
-.buttons{
-display:flex;
-gap:12px;
-margin-top:15px;
-}
-
-button{
-border:none;
-border-radius:15px;
-padding:15px 20px;
-font-size:17px;
-font-weight:bold;
-cursor:pointer;
-}
-
-.ask{
-flex:1;
-background:#7c4dff;
-color:white;
-}
-
-.mic{
-background:#eee;
-font-size:24px;
-width:65px;
-}
-
-.answer{
-margin-top:25px;
-min-height:150px;
-}
-
-.answer h2{
-margin-top:0;
-}
-
-#answerText{
-font-size:18px;
-line-height:1.6;
-color:#444;
-white-space:pre-wrap;
-}
-
-.speak{
-margin-top:15px;
-background:#222;
-color:white;
-}
-
-.status{
-text-align:center;
-color:#777;
-margin-top:15px;
-}
-</style>
-
-</head>
-
-<body>
-
-<div class="container">
-
-<h1>Ask Away</h1>
-
-<div class="subtitle">
-Ask anything. Just type or speak.
-</div>
-
-<div class="ask-box">
-
-<textarea id="question" placeholder="What would you like to ask?"></textarea>
-
-<div class="buttons">
-
-<button class="mic" onclick="startListening()">🎤</button>
-
-<button class="ask" onclick="askQuestion()">Ask Away</button>
-
-</div>
-
-<div class="status" id="status"></div>
-
-</div>
-
-<div class="answer">
-
-<h2>💬 Answer</h2>
-
-<div id="answerText">
-Your answer will appear here.
-</div>
-
-<button class="speak" onclick="speakAnswer()">
-🔊 Read Answer Aloud
-</button>
-
-</div>
-
-</div>
-
-<script>
-
-function startListening(){
-
-const SpeechRecognition =
-window.SpeechRecognition ||
-window.webkitSpeechRecognition;
-
-if(!SpeechRecognition){
-document.getElementById("status").textContent =
-"Voice input isn't supported in this browser.";
-return;
-}
-
-const recognition = new SpeechRecognition();
-
-recognition.lang = "en-IE";
-recognition.interimResults = false;
-recognition.continuous = false;
-
-document.getElementById("status").textContent =
-"🎤 Listening...";
-
-recognition.start();
-
-recognition.onresult = function(event){
-
-const text =
-event.results[0][0].transcript;
-
-document.getElementById("question").value = text;
-
-document.getElementById("status").textContent =
-"I heard: " + text;
-
-};
-
-recognition.onerror = function(event){
-
-document.getElementById("status").textContent =
-"Microphone error: " + event.error;
-
-};
-
-recognition.onend = function(){
-
-if(
-document.getElementById("status").textContent ===
-"🎤 Listening..."
-){
-document.getElementById("status").textContent =
-"Listening stopped.";
-}
-
-};
-
-}
-
-
-async function askQuestion(){
-
-const question =
-document.getElementById("question").value.trim();
-
-const answer =
-document.getElementById("answerText");
-
-const status =
-document.getElementById("status");
-
-if(!question){
-
-answer.textContent =
-"Please type or speak a question first.";
-
-return;
-
-}
-
-answer.textContent =
-"Thinking...";
-
-status.textContent =
-"Connecting to Ask Away AI...";
-
-try{
-
-const response = await fetch("/api/ask",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-question:question
-})
-
-});
-
-const data = await response.json();
-
-if(!response.ok){
-
-throw new Error(
-data.error || "Something went wrong."
-);
-
-}
-
-answer.textContent =
-data.answer || "I didn't receive an answer.";
-
-status.textContent = "";
-
-}
-catch(error){
-
-answer.textContent =
-"Sorry, I couldn't get an answer right now.";
-
-status.textContent =
-error.message;
-
-}
-
-}
-
-
-function speakAnswer(){
-
-const text =
-document.getElementById("answerText").textContent;
-
-if(!text)return;
-
-const speech =
-new SpeechSynthesisUtterance(text);
-
-speech.lang = "en-IE";
-speech.rate = 1;
-
-window.speechSynthesis.cancel();
-
-window.speechSynthesis.speak(speech);
-
-}
-
-</script>
-
-</body>
-</html>
