@@ -5,5 +5,17 @@
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#111111",
-  "description": "Ask Away - your AI question and answer app."
+  "description": "Ask Away - your AI assistant for questions by voice or text.",
+  "icons": [
+    {
+      "src": "ask-away-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "ask-away-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }
