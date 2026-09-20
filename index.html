@@ -3,171 +3,117 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Ask Away</title>
 
 <style>
-* {
-  box-sizing: border-box;
+*{box-sizing:border-box}
+
+body{
+margin:0;
+min-height:100vh;
+font-family:Arial,sans-serif;
+background:linear-gradient(135deg,#111827,#2563eb);
+display:flex;
+justify-content:center;
+align-items:center;
+padding:15px
 }
 
-body {
-  margin: 0;
-  min-height: 100vh;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #111827, #2563eb);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
+.container{
+width:100%;
+max-width:600px;
+background:white;
+border-radius:30px;
+padding:30px 20px;
+box-shadow:0 20px 50px rgba(0,0,0,.3);
+text-align:center
 }
 
-.container {
-  width: 100%;
-  max-width: 600px;
-  background: rgba(255, 255, 255, 0.97);
-  border-radius: 32px;
-  padding: 35px 25px;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+.logo{
+width:75px;
+height:75px;
+margin:auto;
+border-radius:22px;
+background:linear-gradient(135deg,#2563eb,#7c3aed);
+color:white;
+font-size:42px;
+font-weight:bold;
+display:flex;
+align-items:center;
+justify-content:center
 }
 
-.logo {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 15px;
-  border-radius: 24px;
-  background: linear-gradient(135deg, #2563eb, #7c3aed);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 42px;
-  font-weight: bold;
-  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+h1{
+font-size:48px;
+margin:12px 0 5px;
+color:#111827
 }
 
-h1 {
-  text-align: center;
-  font-size: 52px;
-  margin: 5px 0;
-  color: #111827;
-  letter-spacing: -2px;
+.subtitle{
+font-size:19px;
+color:#6b7280;
+margin-bottom:25px
 }
 
-.subtitle {
-  text-align: center;
-  color: #6b7280;
-  font-size: 20px;
-  margin-bottom: 30px;
+textarea{
+width:100%;
+height:160px;
+padding:18px;
+font-size:20px;
+border:2px solid #ddd;
+border-radius:20px;
+resize:none;
+outline:none
 }
 
-textarea {
-  width: 100%;
-  min-height: 170px;
-  padding: 20px;
-  border: 2px solid #e5e7eb;
-  border-radius: 22px;
-  font-size: 21px;
-  font-family: Arial, sans-serif;
-  resize: vertical;
-  outline: none;
-  transition: 0.2s;
+button{
+width:100%;
+border:0;
+border-radius:18px;
+padding:17px;
+margin-top:14px;
+font-size:20px;
+font-weight:bold;
+cursor:pointer
 }
 
-textarea:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+#micButton{
+background:#eef2ff;
+color:#3730a3
 }
 
-.buttons {
-  display: flex;
-  gap: 12px;
-  margin-top: 18px;
+#askButton{
+background:linear-gradient(135deg,#2563eb,#7c3aed);
+color:white
 }
 
-button {
-  border: none;
-  cursor: pointer;
-  font-size: 20px;
-  font-weight: bold;
-  border-radius: 18px;
-  padding: 17px 20px;
-  transition: transform 0.15s, opacity 0.15s;
+#answer{
+margin-top:25px;
+padding:20px;
+background:#f5f7fa;
+border-radius:20px;
+font-size:20px;
+line-height:1.5;
+text-align:left;
+min-height:60px
 }
 
-button:active {
-  transform: scale(0.97);
+#hearButton{
+display:none;
+background:#111827;
+color:white
 }
 
-#micButton {
-  flex: 1;
-  background: #eef2ff;
-  color: #3730a3;
+#stopButton{
+display:none;
+background:#fee2e2;
+color:#991b1b
 }
 
-#askButton {
-  width: 100%;
-  margin-top: 14px;
-  background: linear-gradient(135deg, #2563eb, #7c3aed);
-  color: white;
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
-}
-
-#answer {
-  margin-top: 28px;
-  padding: 22px;
-  background: #f8fafc;
-  border: 1px solid #e5e7eb;
-  border-radius: 22px;
-  color: #111827;
-  font-size: 20px;
-  line-height: 1.6;
-  min-height: 60px;
-  text-align: left;
-  white-space: pre-wrap;
-}
-
-.loading {
-  opacity: 0.6;
-}
-
-.footer {
-  text-align: center;
-  color: #9ca3af;
-  font-size: 14px;
-  margin-top: 25px;
-}
-
-@media (max-width: 600px) {
-
-  body {
-    padding: 12px;
-  }
-
-  .container {
-    padding: 28px 18px;
-    border-radius: 28px;
-  }
-
-  h1 {
-    font-size: 46px;
-  }
-
-  .subtitle {
-    font-size: 18px;
-  }
-
-  textarea {
-    font-size: 20px;
-  }
-
-  button {
-    font-size: 18px;
-  }
-
-  #answer {
-    font-size: 19px;
-  }
+.footer{
+margin-top:20px;
+font-size:13px;
+color:#9ca3af
 }
 </style>
 </head>
@@ -176,138 +122,142 @@ button:active {
 
 <div class="container">
 
-  <div class="logo">?</div>
+<div class="logo">?</div>
 
-  <h1>Ask Away</h1>
+<h1>Ask Away</h1>
 
-  <div class="subtitle">
-    Ask anything. Get an answer.
-  </div>
+<div class="subtitle">Ask anything. Get an answer.</div>
 
-  <textarea
-    id="question"
-    placeholder="What would you like to know?"
-  ></textarea>
+<textarea id="question"
+placeholder="What would you like to know?"></textarea>
 
-  <div class="buttons">
-    <button id="micButton">🎤 Speak</button>
-  </div>
+<button id="micButton">🎤 Speak</button>
 
-  <button id="askButton">Ask Away →</button>
+<button id="askButton">Ask Away →</button>
 
-  <div id="answer">
-    Your answer will appear here.
-  </div>
+<div id="answer">Your answer will appear here.</div>
 
-  <div class="footer">
-    Powered by AI
-  </div>
+<button id="hearButton">🔊 Hear Answer</button>
+
+<button id="stopButton">⏹ Stop Speaking</button>
+
+<div class="footer">Powered by AI</div>
 
 </div>
 
 <script>
 
-const questionBox = document.getElementById("question");
-const askButton = document.getElementById("askButton");
-const answerBox = document.getElementById("answer");
-const micButton = document.getElementById("micButton");
+const question=document.getElementById("question");
+const ask=document.getElementById("askButton");
+const answer=document.getElementById("answer");
+const mic=document.getElementById("micButton");
+const hear=document.getElementById("hearButton");
+const stop=document.getElementById("stopButton");
 
-askButton.addEventListener("click", async () => {
+let currentAnswer="";
 
-  const question = questionBox.value.trim();
+function speak(text){
+if(!("speechSynthesis" in window)) return;
 
-  if (!question) {
-    answerBox.textContent = "Please enter a question.";
-    return;
-  }
+speechSynthesis.cancel();
 
-  answerBox.textContent = "Thinking...";
-  answerBox.classList.add("loading");
+const voice=new SpeechSynthesisUtterance(text);
+voice.lang="en-IE";
+voice.rate=.95;
 
-  try {
+voice.onstart=()=>{
+stop.style.display="block";
+};
 
-    const response = await fetch("/api/ask", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        question: question
-      })
-    });
+voice.onend=()=>{
+stop.style.display="none";
+};
 
-    const data = await response.json();
+speechSynthesis.speak(voice);
+}
 
-    if (!response.ok) {
-      throw new Error(data.error || "Something went wrong.");
-    }
+ask.onclick=async()=>{
 
-    let answer = data.answer || "I didn't receive an answer.";
+const q=question.value.trim();
 
-    answer = answer.replace(/\*\*(.*?)\*\*/g, "$1");
+if(!q){
+answer.textContent="Please enter a question.";
+return;
+}
 
-    answerBox.textContent = answer;
+answer.textContent="Thinking...";
+hear.style.display="none";
+stop.style.display="none";
 
-  } catch (error) {
+try{
 
-    answerBox.textContent =
-      "Sorry, something went wrong. Please try again.";
-
-  } finally {
-
-    answerBox.classList.remove("loading");
-
-  }
-
+const response=await fetch("/api/ask",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({question:q})
 });
 
+const data=await response.json();
 
-const SpeechRecognition =
-  window.SpeechRecognition ||
-  window.webkitSpeechRecognition;
+if(!response.ok){
+throw new Error(data.error);
+}
 
-if (SpeechRecognition) {
+currentAnswer=(data.answer||"I didn't receive an answer.")
+.replace(/\*\*(.*?)\*\*/g,"$1");
 
-  const recognition = new SpeechRecognition();
+answer.textContent=currentAnswer;
+hear.style.display="block";
 
-  recognition.lang = "en-IE";
-  recognition.continuous = false;
-  recognition.interimResults = false;
+}catch(error){
 
-  micButton.addEventListener("click", () => {
+answer.textContent="Sorry, something went wrong.";
 
-    recognition.start();
+}
 
-    micButton.textContent = "🎙️ Listening...";
+};
 
-  });
+hear.onclick=()=>{
+if(currentAnswer) speak(currentAnswer);
+};
 
-  recognition.onresult = (event) => {
+stop.onclick=()=>{
+speechSynthesis.cancel();
+stop.style.display="none";
+};
 
-    const transcript =
-      event.results[0][0].transcript;
+const SpeechRecognition=
+window.SpeechRecognition||
+window.webkitSpeechRecognition;
 
-    questionBox.value = transcript;
+if(SpeechRecognition){
 
-    micButton.textContent = "🎤 Speak";
+const recognition=new SpeechRecognition();
 
-  };
+recognition.lang="en-IE";
+recognition.continuous=false;
 
-  recognition.onerror = () => {
+mic.onclick=()=>{
+recognition.start();
+mic.textContent="🎙️ Listening...";
+};
 
-    micButton.textContent = "🎤 Speak";
+recognition.onresult=(event)=>{
+question.value=event.results[0][0].transcript;
+mic.textContent="🎤 Speak";
+};
 
-  };
+recognition.onerror=()=>{
+mic.textContent="🎤 Speak";
+};
 
-  recognition.onend = () => {
+recognition.onend=()=>{
+mic.textContent="🎤 Speak";
+};
 
-    micButton.textContent = "🎤 Speak";
+}else{
 
-  };
-
-} else {
-
-  micButton.style.display = "none";
+mic.style.display="none";
 
 }
 
