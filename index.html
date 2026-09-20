@@ -51,9 +51,7 @@ font-weight:900;
 letter-spacing:-2px;
 }
 
-h1 span{
-color:#20d9ff;
-}
+h1 span{color:#20d9ff}
 
 .subtitle{
 margin:16px auto 25px;
@@ -86,9 +84,7 @@ outline:none;
 font-family:Arial,Helvetica,sans-serif;
 }
 
-textarea:focus{
-border-color:#20d9ff;
-}
+textarea:focus{border-color:#20d9ff}
 
 button{
 width:100%;
@@ -105,13 +101,6 @@ cursor:pointer;
 background:#14283d;
 color:#20d9ff;
 border:1px solid #28506f;
-transition:transform .2s,box-shadow .2s,border-color .2s;
-}
-
-.ask:hover{
-transform:translateY(-2px);
-box-shadow:0 0 20px rgba(32,217,255,.25);
-border-color:#20d9ff;
 }
 
 .ask:disabled{
@@ -165,9 +154,7 @@ white-space:pre-wrap;
 box-shadow:0 10px 30px rgba(0,0,0,.15);
 }
 
-.answer.show{
-display:block;
-}
+.answer.show{display:block}
 
 .answer-title{
 font-weight:900;
@@ -198,9 +185,7 @@ gap:12px;
 margin-top:12px;
 }
 
-.main-tools button{
-margin-top:0;
-}
+.main-tools button{margin-top:0}
 
 .history-section{
 display:none;
@@ -208,9 +193,7 @@ margin-top:20px;
 text-align:left;
 }
 
-.history-section.show{
-display:block;
-}
+.history-section.show{display:block}
 
 .history-header{
 display:flex;
@@ -409,101 +392,22 @@ document.getElementById("historyList");
 const clearHistoryButton =
 document.getElementById("clearHistoryButton");
 
-let recognition = null;
-  /* MICROPHONE */
-
-const SpeechRecognition =
-window.SpeechRecognition ||
-window.webkitSpeechRecognition;
-
-if(SpeechRecognition){
-
-recognition =
-new SpeechRecognition();
-
-recognition.lang="en-IE";
-recognition.continuous=false;
-recognition.interimResults=false;
-
-recognition.onstart=function(){
-
-micButton.classList.add("listening");
-
-setStatus("Listening...");
-
-};
-
-recognition.onresult=function(event){
-
-const transcript =
-event.results[0][0].transcript;
-
-questionBox.value=transcript;
-
-setStatus("Ready.");
-
-};
-
-recognition.onerror=function(event){
-
-console.error(event.error);
-
-setStatus(
-"Microphone error: "+event.error
-);
-
-micButton.classList.remove("listening");
-
-};
-
-recognition.onend=function(){
-
-micButton.classList.remove("listening");
-
-};
-
-micButton.addEventListener(
-"click",
-function(){
-
-recognition.start();
-
-}
-);
-
-}else{
-
-micButton.addEventListener(
-"click",
-function(){
-
-setStatus(
-"Speech recognition is not supported in this browser."
-);
-
-}
-);
-
-}
-
 
 /* STATUS */
 
 function setStatus(message){
-
-statusBox.textContent = message;
-
+statusBox.textContent=message;
 }
 
 
-/* SPEECH */
+/* SPEAK ANSWER */
 
 function speakAnswer(){
 
-const text =
-answerText.textContent.trim();
+const text=answerText.textContent.trim();
 
 if(!text){
+setStatus("There is no answer to read yet.");
 return;
 }
 
@@ -512,27 +416,27 @@ setStatus("Speech is not supported.");
 return;
 }
 
-speechSynthesis.cancel();
+window.speechSynthesis.cancel();
 
-const speech =
+const speech=
 new SpeechSynthesisUtterance(text);
 
 speech.lang="en-IE";
 speech.rate=1;
 speech.pitch=1;
 
-speechSynthesis.speak(speech);
+window.speechSynthesis.speak(speech);
 
 }
 
 
-/* HISTORY STORAGE */
+/* HISTORY */
 
 function getHistory(){
 
 try{
 
-const saved =
+const saved=
 localStorage.getItem("askAwayHistory");
 
 if(!saved){
@@ -544,7 +448,6 @@ return JSON.parse(saved);
 }catch(error){
 
 console.error(error);
-
 return [];
 
 }
@@ -570,36 +473,27 @@ console.error(error);
 }
 
 
-/* ADD TO HISTORY */
-
 function addToHistory(question,answer){
 
-const history =
-getHistory();
+const history=getHistory();
 
 history.unshift({
 
 question:question,
-
 answer:answer,
-
 date:new Date().toLocaleString("en-IE")
 
 });
 
 saveHistory(history);
-
 renderHistory();
 
 }
 
 
-/* DISPLAY HISTORY */
-
 function renderHistory(){
 
-const history =
-getHistory();
+const history=getHistory();
 
 historyList.innerHTML="";
 
@@ -614,39 +508,31 @@ return;
 
 history.forEach(function(item){
 
-const box =
+const box=
 document.createElement("div");
 
 box.className="history-item";
 
-const q =
+const q=
 document.createElement("div");
 
 q.className="history-question";
+q.textContent="You: "+item.question;
 
-q.textContent=
-"You: "+item.question;
-
-const a =
+const a=
 document.createElement("div");
 
 a.className="history-answer";
+a.textContent=item.answer;
 
-a.textContent=
-item.answer;
-
-const d =
+const d=
 document.createElement("div");
 
 d.className="history-date";
-
-d.textContent=
-item.date;
+d.textContent=item.date;
 
 box.appendChild(q);
-
 box.appendChild(a);
-
 box.appendChild(d);
 
 historyList.appendChild(box);
@@ -660,40 +546,27 @@ historyList.appendChild(box);
 
 async function askAway(){
 
-const question =
+const question=
 questionBox.value.trim();
 
 if(!question){
 
-setStatus(
-"Please type a question first."
-);
-
+setStatus("Please type a question first.");
 questionBox.focus();
-
 return;
 
 }
 
 askButton.disabled=true;
-
 askButton.textContent="THINKING...";
-
 setStatus("Thinking...");
 
 answerBox.classList.remove("show");
-
 answerText.textContent="";
-
 
 try{
 
-/*
-This is the existing working
-Ask Away API connection.
-*/
-
-const response =
+const response=
 await fetch("/api/ask",{
 
 method:"POST",
@@ -703,50 +576,80 @@ headers:{
 },
 
 body:JSON.stringify({
-
 question:question
-
 })
 
 });
 
-
 if(!response.ok){
-
-throw new Error(
-"Request failed"
-);
-
+throw new Error("Request failed");
 }
 
-
-const data =
+const data=
 await response.json();
 
-
-const answer =
-
+const answer=
 data.answer ||
-
 data.response ||
-
 data.message ||
-
 "No answer was returned.";
 
-
-answerText.textContent=
-answer;
+answerText.textContent=answer;
 
 answerBox.classList.add("show");
 
 setStatus("Ready.");
 
+addToHistory(question,answer);
 
-/*
-Save the question and answer
-to conversation history.
-*/
+}catch(error){
 
-addToHistory(
-question
+console.error(error);
+
+answerText.textContent=
+"Sorry, something went wrong.";
+
+answerBox.classList.add("show");
+
+setStatus("Could not get an answer.");
+
+}
+
+askButton.disabled=false;
+askButton.textContent="ASK AWAY";
+
+}
+
+
+/* MICROPHONE */
+
+let recognition=null;
+
+const SpeechRecognitionAPI=
+window.SpeechRecognition ||
+window.webkitSpeechRecognition;
+
+if(SpeechRecognitionAPI){
+
+recognition=
+new SpeechRecognitionAPI();
+
+recognition.lang="en-IE";
+recognition.continuous=false;
+recognition.interimResults=false;
+
+recognition.onstart=function(){
+
+micButton.classList.add("listening");
+setStatus("Listening...");
+
+};
+
+recognition.onresult=function(event){
+
+const transcript=
+event.results[0][0].transcript;
+
+questionBox.value=transcript;
+
+setStatus("Ready
