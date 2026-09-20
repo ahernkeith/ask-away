@@ -1,0 +1,9 @@
+{
+  "name": "Ask Away",
+  "short_name": "Ask Away",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#111111",
+  "description": "Ask Away - your AI question and answer app."
+}
