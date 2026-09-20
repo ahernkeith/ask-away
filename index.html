@@ -51,7 +51,9 @@ font-weight:900;
 letter-spacing:-2px;
 }
 
-h1 span{color:#20d9ff}
+h1 span{
+color:#20d9ff;
+}
 
 .subtitle{
 margin:16px auto 25px;
@@ -84,7 +86,9 @@ outline:none;
 font-family:Arial,Helvetica,sans-serif;
 }
 
-textarea:focus{border-color:#20d9ff}
+textarea:focus{
+border-color:#20d9ff;
+}
 
 button{
 width:100%;
@@ -108,31 +112,6 @@ opacity:.6;
 cursor:wait;
 }
 
-.mic{
-margin:12px auto;
-width:58px;
-height:58px;
-padding:0;
-border-radius:50%;
-background:#07111f;
-color:#20d9ff;
-border:2px solid #20d9ff;
-font-size:24px;
-display:flex;
-align-items:center;
-justify-content:center;
-}
-
-.mic.listening{
-animation:pulse 1.2s infinite;
-}
-
-@keyframes pulse{
-0%{box-shadow:0 0 0 0 rgba(32,217,255,.35)}
-50%{box-shadow:0 0 0 15px rgba(32,217,255,.04)}
-100%{box-shadow:0 0 0 0 rgba(32,217,255,0)}
-}
-
 .status{
 margin-top:14px;
 font-size:14px;
@@ -151,10 +130,11 @@ text-align:left;
 font-size:18px;
 line-height:1.6;
 white-space:pre-wrap;
-box-shadow:0 10px 30px rgba(0,0,0,.15);
 }
 
-.answer.show{display:block}
+.answer.show{
+display:block;
+}
 
 .answer-title{
 font-weight:900;
@@ -185,7 +165,9 @@ gap:12px;
 margin-top:12px;
 }
 
-.main-tools button{margin-top:0}
+.main-tools button{
+margin-top:0;
+}
 
 .history-section{
 display:none;
@@ -193,7 +175,9 @@ margin-top:20px;
 text-align:left;
 }
 
-.history-section.show{display:block}
+.history-section.show{
+display:block;
+}
 
 .history-header{
 display:flex;
@@ -277,10 +261,6 @@ id="question"
 placeholder="What would you like to ask?"
 ></textarea>
 
-<button class="mic" id="micButton" type="button">
-🎙️
-</button>
-
 <button class="ask" id="askButton" type="button">
 ASK AWAY
 </button>
@@ -291,365 +271,3 @@ ASK AWAY
 
 <div class="answer-title">
 Answer
-</div>
-
-<div id="answerText"></div>
-
-</div>
-
-<div class="tools">
-
-<button id="speakButton" type="button">
-🔊 Read Answer
-</button>
-
-<button id="clearButton" type="button">
-✕ Clear
-</button>
-
-</div>
-
-<div class="main-tools">
-
-<button id="newConversationButton" type="button">
-🆕 New Conversation
-</button>
-
-<button id="historyButton" type="button">
-📜 History
-</button>
-
-</div>
-
-<div class="history-section" id="historySection">
-
-<div class="history-header">
-
-<div class="history-title">
-Conversation History
-</div>
-
-<button
-class="clear-history"
-id="clearHistoryButton"
-type="button"
->
-🗑️ Clear History
-</button>
-
-</div>
-
-<div id="historyList"></div>
-
-</div>
-
-</div>
-
-<div class="footer">
-Ask Away — your AI assistant
-</div>
-
-</div>
-
-<script>
-
-const questionBox =
-document.getElementById("question");
-
-const askButton =
-document.getElementById("askButton");
-
-const micButton =
-document.getElementById("micButton");
-
-const answerBox =
-document.getElementById("answer");
-
-const answerText =
-document.getElementById("answerText");
-
-const statusBox =
-document.getElementById("status");
-
-const speakButton =
-document.getElementById("speakButton");
-
-const clearButton =
-document.getElementById("clearButton");
-
-const newConversationButton =
-document.getElementById("newConversationButton");
-
-const historyButton =
-document.getElementById("historyButton");
-
-const historySection =
-document.getElementById("historySection");
-
-const historyList =
-document.getElementById("historyList");
-
-const clearHistoryButton =
-document.getElementById("clearHistoryButton");
-
-
-/* STATUS */
-
-function setStatus(message){
-statusBox.textContent=message;
-}
-
-
-/* SPEAK ANSWER */
-
-function speakAnswer(){
-
-const text=answerText.textContent.trim();
-
-if(!text){
-setStatus("There is no answer to read yet.");
-return;
-}
-
-if(!("speechSynthesis" in window)){
-setStatus("Speech is not supported.");
-return;
-}
-
-window.speechSynthesis.cancel();
-
-const speech=
-new SpeechSynthesisUtterance(text);
-
-speech.lang="en-IE";
-speech.rate=1;
-speech.pitch=1;
-
-window.speechSynthesis.speak(speech);
-
-}
-
-
-/* HISTORY */
-
-function getHistory(){
-
-try{
-
-const saved=
-localStorage.getItem("askAwayHistory");
-
-if(!saved){
-return [];
-}
-
-return JSON.parse(saved);
-
-}catch(error){
-
-console.error(error);
-return [];
-
-}
-
-}
-
-
-function saveHistory(history){
-
-try{
-
-localStorage.setItem(
-"askAwayHistory",
-JSON.stringify(history)
-);
-
-}catch(error){
-
-console.error(error);
-
-}
-
-}
-
-
-function addToHistory(question,answer){
-
-const history=getHistory();
-
-history.unshift({
-
-question:question,
-answer:answer,
-date:new Date().toLocaleString("en-IE")
-
-});
-
-saveHistory(history);
-renderHistory();
-
-}
-
-
-function renderHistory(){
-
-const history=getHistory();
-
-historyList.innerHTML="";
-
-if(history.length===0){
-
-historyList.innerHTML=
-'<div class="empty-history">No conversations saved yet.</div>';
-
-return;
-
-}
-
-history.forEach(function(item){
-
-const box=
-document.createElement("div");
-
-box.className="history-item";
-
-const q=
-document.createElement("div");
-
-q.className="history-question";
-q.textContent="You: "+item.question;
-
-const a=
-document.createElement("div");
-
-a.className="history-answer";
-a.textContent=item.answer;
-
-const d=
-document.createElement("div");
-
-d.className="history-date";
-d.textContent=item.date;
-
-box.appendChild(q);
-box.appendChild(a);
-box.appendChild(d);
-
-historyList.appendChild(box);
-
-});
-
-}
-
-
-/* ASK AI */
-
-async function askAway(){
-
-const question=
-questionBox.value.trim();
-
-if(!question){
-
-setStatus("Please type a question first.");
-questionBox.focus();
-return;
-
-}
-
-askButton.disabled=true;
-askButton.textContent="THINKING...";
-setStatus("Thinking...");
-
-answerBox.classList.remove("show");
-answerText.textContent="";
-
-try{
-
-const response=
-await fetch("/api/ask",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-question:question
-})
-
-});
-
-if(!response.ok){
-throw new Error("Request failed");
-}
-
-const data=
-await response.json();
-
-const answer=
-data.answer ||
-data.response ||
-data.message ||
-"No answer was returned.";
-
-answerText.textContent=answer;
-
-answerBox.classList.add("show");
-
-setStatus("Ready.");
-
-addToHistory(question,answer);
-
-}catch(error){
-
-console.error(error);
-
-answerText.textContent=
-"Sorry, something went wrong.";
-
-answerBox.classList.add("show");
-
-setStatus("Could not get an answer.");
-
-}
-
-askButton.disabled=false;
-askButton.textContent="ASK AWAY";
-
-}
-
-
-/* MICROPHONE */
-
-let recognition=null;
-
-const SpeechRecognitionAPI=
-window.SpeechRecognition ||
-window.webkitSpeechRecognition;
-
-if(SpeechRecognitionAPI){
-
-recognition=
-new SpeechRecognitionAPI();
-
-recognition.lang="en-IE";
-recognition.continuous=false;
-recognition.interimResults=false;
-
-recognition.onstart=function(){
-
-micButton.classList.add("listening");
-setStatus("Listening...");
-
-};
-
-recognition.onresult=function(event){
-
-const transcript=
-event.results[0][0].transcript;
-
-questionBox.value=transcript;
-
-setStatus("Ready
