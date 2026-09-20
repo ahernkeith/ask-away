@@ -18,14 +18,14 @@ background:radial-gradient(circle at top,#12345a 0%,#07111f 45%,#02060b 100%);
 color:white;
 display:flex;
 justify-content:center;
-align-items:center;
+align-items:flex-start;
 }
 
 .app{
 width:100%;
 max-width:650px;
 min-height:100vh;
-padding:28px 20px 35px;
+padding:28px 20px 40px;
 text-align:center;
 }
 
@@ -83,6 +83,7 @@ background:#fff;
 color:#111827;
 font-size:20px;
 outline:none;
+font-family:Arial,Helvetica,sans-serif;
 }
 
 textarea:focus{
@@ -113,6 +114,11 @@ box-shadow:0 0 20px rgba(32,217,255,.25);
 border-color:#20d9ff;
 }
 
+.ask:disabled{
+opacity:.6;
+cursor:wait;
+}
+
 .mic{
 margin:12px auto;
 width:58px;
@@ -138,6 +144,13 @@ animation:pulse 1.2s infinite;
 100%{box-shadow:0 0 0 0 rgba(32,217,255,0)}
 }
 
+.status{
+margin-top:14px;
+font-size:14px;
+color:#9fb3c8;
+min-height:20px;
+}
+
 .answer{
 display:none;
 margin-top:20px;
@@ -159,8 +172,8 @@ display:block;
 .answer-title{
 font-weight:900;
 color:#14283d;
-margin-bottom:10px;
-font-size:18px;
+margin-bottom:12px;
+font-size:20px;
 }
 
 .tools{
@@ -178,11 +191,80 @@ border:1px solid #29425e;
 font-size:16px;
 }
 
-.status{
-margin-top:14px;
-font-size:14px;
+.main-tools{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+margin-top:12px;
+}
+
+.main-tools button{
+margin-top:0;
+}
+
+.history-section{
+display:none;
+margin-top:20px;
+text-align:left;
+}
+
+.history-section.show{
+display:block;
+}
+
+.history-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:10px;
+margin-bottom:12px;
+}
+
+.history-title{
+font-size:21px;
+font-weight:900;
+}
+
+.clear-history{
+width:auto;
+margin:0;
+padding:10px 14px;
+font-size:13px;
+background:#31151b;
+color:#ffb5bd;
+border:1px solid #69303a;
+}
+
+.history-item{
+background:#f8fafc;
+color:#111827;
+border-radius:18px;
+padding:16px;
+margin-top:12px;
+}
+
+.history-question{
+font-weight:900;
+font-size:16px;
+margin-bottom:9px;
+}
+
+.history-answer{
+font-size:15px;
+line-height:1.5;
+white-space:pre-wrap;
+}
+
+.history-date{
+margin-top:10px;
+font-size:12px;
+color:#718096;
+}
+
+.empty-history{
 color:#9fb3c8;
-min-height:20px;
+text-align:center;
+padding:18px 5px;
 }
 
 .footer{
@@ -207,9 +289,14 @@ Ask anything. Get clear answers.
 
 <div class="card">
 
-<textarea id="question" placeholder="What would you like to ask?"></textarea>
+<textarea
+id="question"
+placeholder="What would you like to ask?"
+></textarea>
 
-<button class="mic" id="micButton" type="button">🎙️</button>
+<button class="mic" id="micButton" type="button">
+🎙️
+</button>
 
 <button class="ask" id="askButton" type="button">
 ASK AWAY
@@ -218,13 +305,59 @@ ASK AWAY
 <div class="status" id="status"></div>
 
 <div class="answer" id="answer">
-<div class="answer-title">Answer</div>
+
+<div class="answer-title">
+Answer
+</div>
+
 <div id="answerText"></div>
+
 </div>
 
 <div class="tools">
-<button id="speakButton" type="button">🔊 Read Answer</button>
-<button id="clearButton" type="button">✕ Clear</button>
+
+<button id="speakButton" type="button">
+🔊 Read Answer
+</button>
+
+<button id="clearButton" type="button">
+✕ Clear
+</button>
+
+</div>
+
+<div class="main-tools">
+
+<button id="newConversationButton" type="button">
+🆕 New Conversation
+</button>
+
+<button id="historyButton" type="button">
+📜 History
+</button>
+
+</div>
+
+<div class="history-section" id="historySection">
+
+<div class="history-header">
+
+<div class="history-title">
+Conversation History
+</div>
+
+<button
+class="clear-history"
+id="clearHistoryButton"
+type="button"
+>
+🗑️ Clear History
+</button>
+
+</div>
+
+<div id="historyList"></div>
+
 </div>
 
 </div>
@@ -236,223 +369,309 @@ Ask Away — your AI assistant
 </div>
 
 <script>
-const questionBox = document.getElementById("question");
-const askButton = document.getElementById("askButton");
-const micButton = document.getElementById("micButton");
-const answerBox = document.getElementById("answer");
-const answerText = document.getElementById("answerText");
-const statusBox = document.getElementById("status");
-const speakButton = document.getElementById("speakButton");
-const clearButton = document.getElementById("clearButton");
+
+const questionBox =
+document.getElementById("question");
+
+const askButton =
+document.getElementById("askButton");
+
+const micButton =
+document.getElementById("micButton");
+
+const answerBox =
+document.getElementById("answer");
+
+const answerText =
+document.getElementById("answerText");
+
+const statusBox =
+document.getElementById("status");
+
+const speakButton =
+document.getElementById("speakButton");
+
+const clearButton =
+document.getElementById("clearButton");
+
+const newConversationButton =
+document.getElementById("newConversationButton");
+
+const historyButton =
+document.getElementById("historyButton");
+
+const historySection =
+document.getElementById("historySection");
+
+const historyList =
+document.getElementById("historyList");
+
+const clearHistoryButton =
+document.getElementById("clearHistoryButton");
 
 let recognition = null;
 
+
+/* STATUS */
+
 function setStatus(message){
+
 statusBox.textContent = message;
+
 }
+
+
+/* SPEECH */
 
 function speakAnswer(){
 
-const text = answerText.textContent.trim();
+const text =
+answerText.textContent.trim();
 
 if(!text){
 return;
 }
 
 if(!("speechSynthesis" in window)){
+setStatus("Speech is not supported.");
 return;
 }
 
 speechSynthesis.cancel();
 
-const speech = new SpeechSynthesisUtterance(text);
+const speech =
+new SpeechSynthesisUtterance(text);
 
-speech.lang = "en-IE";
-speech.rate = 1;
-speech.pitch = 1;
+speech.lang="en-IE";
+speech.rate=1;
+speech.pitch=1;
 
 speechSynthesis.speak(speech);
 
 }
 
-async function askAway(){
 
-const question = questionBox.value.trim();
+/* HISTORY STORAGE */
 
-if(!question){
-setStatus("Please type a question first.");
-questionBox.focus();
-return;
-}
-
-askButton.disabled = true;
-askButton.textContent = "THINKING...";
-setStatus("Thinking...");
-
-answerBox.classList.remove("show");
-answerText.textContent = "";
+function getHistory(){
 
 try{
 
-const response = await fetch("/api/ask",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-question:question
-})
-});
+const saved =
+localStorage.getItem("askAwayHistory");
 
-if(!response.ok){
-throw new Error("Request failed");
+if(!saved){
+return [];
 }
 
-const data = await response.json();
-
-const answer =
-data.answer ||
-data.response ||
-data.message ||
-"No answer was returned.";
-
-answerText.textContent = answer;
-answerBox.classList.add("show");
-
-setStatus("Ready.");
-
-speakAnswer();
+return JSON.parse(saved);
 
 }catch(error){
 
 console.error(error);
 
-answerText.textContent =
-"Sorry, I couldn't connect to Ask Away right now. Please try again.";
+return [];
+
+}
+
+}
+
+
+function saveHistory(history){
+
+try{
+
+localStorage.setItem(
+"askAwayHistory",
+JSON.stringify(history)
+);
+
+}catch(error){
+
+console.error(error);
+
+}
+
+}
+
+
+/* ADD TO HISTORY */
+
+function addToHistory(question,answer){
+
+const history =
+getHistory();
+
+history.unshift({
+
+question:question,
+
+answer:answer,
+
+date:new Date().toLocaleString("en-IE")
+
+});
+
+saveHistory(history);
+
+renderHistory();
+
+}
+
+
+/* DISPLAY HISTORY */
+
+function renderHistory(){
+
+const history =
+getHistory();
+
+historyList.innerHTML="";
+
+if(history.length===0){
+
+historyList.innerHTML=
+'<div class="empty-history">No conversations saved yet.</div>';
+
+return;
+
+}
+
+history.forEach(function(item){
+
+const box =
+document.createElement("div");
+
+box.className="history-item";
+
+const q =
+document.createElement("div");
+
+q.className="history-question";
+
+q.textContent=
+"You: "+item.question;
+
+const a =
+document.createElement("div");
+
+a.className="history-answer";
+
+a.textContent=
+item.answer;
+
+const d =
+document.createElement("div");
+
+d.className="history-date";
+
+d.textContent=
+item.date;
+
+box.appendChild(q);
+
+box.appendChild(a);
+
+box.appendChild(d);
+
+historyList.appendChild(box);
+
+});
+
+}
+
+
+/* ASK AI */
+
+async function askAway(){
+
+const question =
+questionBox.value.trim();
+
+if(!question){
+
+setStatus(
+"Please type a question first."
+);
+
+questionBox.focus();
+
+return;
+
+}
+
+askButton.disabled=true;
+
+askButton.textContent="THINKING...";
+
+setStatus("Thinking...");
+
+answerBox.classList.remove("show");
+
+answerText.textContent="";
+
+
+try{
+
+/*
+This is the existing working
+Ask Away API connection.
+*/
+
+const response =
+await fetch("/api/ask",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+question:question
+
+})
+
+});
+
+
+if(!response.ok){
+
+throw new Error(
+"Request failed"
+);
+
+}
+
+
+const data =
+await response.json();
+
+
+const answer =
+
+data.answer ||
+
+data.response ||
+
+data.message ||
+
+"No answer was returned.";
+
+
+answerText.textContent=
+answer;
 
 answerBox.classList.add("show");
 
-setStatus("Connection problem.");
+setStatus("Ready.");
 
-}finally{
 
-askButton.disabled = false;
-askButton.textContent = "ASK AWAY";
+/*
+Save the question and answer
+to conversation history.
+*/
 
-}
-
-}
-
-askButton.addEventListener("click",askAway);
-
-questionBox.addEventListener("keydown",function(event){
-
-if(event.key==="Enter" && !event.shiftKey){
-event.preventDefault();
-askAway();
-}
-
-});
-
-speakButton.addEventListener("click",function(){
-
-speakAnswer();
-
-});
-
-clearButton.addEventListener("click",function(){
-
-speechSynthesis.cancel();
-
-questionBox.value="";
-answerText.textContent="";
-answerBox.classList.remove("show");
-setStatus("");
-questionBox.focus();
-
-});
-
-function startVoice(){
-
-const SpeechRecognition =
-window.SpeechRecognition ||
-window.webkitSpeechRecognition;
-
-if(!SpeechRecognition){
-
-setStatus("Voice input is not supported in this browser.");
-return;
-
-}
-
-if(recognition){
-recognition.stop();
-return;
-}
-
-recognition=new SpeechRecognition();
-
-recognition.lang="en-IE";
-recognition.continuous=false;
-recognition.interimResults=false;
-
-recognition.onstart=function(){
-
-micButton.classList.add("listening");
-micButton.textContent="🔴";
-setStatus("Listening...");
-
-};
-
-recognition.onresult=function(event){
-
-const transcript=event.results[0][0].transcript;
-
-questionBox.value=transcript;
-
-setStatus("Voice captured.");
-
-};
-
-recognition.onerror=function(event){
-
-console.log(event.error);
-
-setStatus("Microphone error: "+event.error);
-
-};
-
-recognition.onend=function(){
-
-micButton.classList.remove("listening");
-micButton.textContent="🎙️";
-recognition=null;
-
-};
-
-recognition.start();
-
-}
-
-micButton.addEventListener("click",startVoice);
-
-if("serviceWorker" in navigator){
-
-window.addEventListener("load",function(){
-
-navigator.serviceWorker.register("/service-worker.js")
-.then(function(){
-console.log("Service worker registered");
-})
-.catch(function(error){
-console.log("Service worker registration failed:",error);
-});
-
-});
-
-}
-
-</script>
-
-</body>
-</html>
+addToHistory(
+question
