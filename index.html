@@ -251,6 +251,30 @@ function setStatus(message){
 statusBox.textContent = message;
 }
 
+function speakAnswer(){
+
+const text = answerText.textContent.trim();
+
+if(!text){
+return;
+}
+
+if(!("speechSynthesis" in window)){
+return;
+}
+
+speechSynthesis.cancel();
+
+const speech = new SpeechSynthesisUtterance(text);
+
+speech.lang = "en-IE";
+speech.rate = 1;
+speech.pitch = 1;
+
+speechSynthesis.speak(speech);
+
+}
+
 async function askAway(){
 
 const question = questionBox.value.trim();
@@ -297,6 +321,8 @@ answerBox.classList.add("show");
 
 setStatus("Ready.");
 
+speakAnswer();
+
 }catch(error){
 
 console.error(error);
@@ -328,38 +354,21 @@ askAway();
 
 });
 
+speakButton.addEventListener("click",function(){
+
+speakAnswer();
+
+});
+
 clearButton.addEventListener("click",function(){
+
+speechSynthesis.cancel();
 
 questionBox.value="";
 answerText.textContent="";
 answerBox.classList.remove("show");
 setStatus("");
 questionBox.focus();
-
-});
-
-speakButton.addEventListener("click",function(){
-
-const text=answerText.textContent.trim();
-
-if(!text){
-setStatus("There is no answer to read yet.");
-return;
-}
-
-if(!("speechSynthesis" in window)){
-setStatus("Read aloud is not supported on this device.");
-return;
-}
-
-speechSynthesis.cancel();
-
-const speech=new SpeechSynthesisUtterance(text);
-speech.lang="en-IE";
-speech.rate=1;
-speech.pitch=1;
-
-speechSynthesis.speak(speech);
 
 });
 
