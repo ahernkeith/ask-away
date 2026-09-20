@@ -58,7 +58,7 @@ try{
 const r=await fetch("/api/ask",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:q})});
 const data=await r.json();
 if(!r.ok)throw new Error(data.error);
-currentAnswer=data.answer||"I didn't receive an answer.";
+currcurrentAnswer=(data.answer||"I didn't receive an answer.").replace(/\*/g,"");
 answer.textContent=currentAnswer;
 hear.style.display="block";
 speak();
