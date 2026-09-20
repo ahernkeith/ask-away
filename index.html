@@ -410,6 +410,81 @@ const clearHistoryButton =
 document.getElementById("clearHistoryButton");
 
 let recognition = null;
+  /* MICROPHONE */
+
+const SpeechRecognition =
+window.SpeechRecognition ||
+window.webkitSpeechRecognition;
+
+if(SpeechRecognition){
+
+recognition =
+new SpeechRecognition();
+
+recognition.lang="en-IE";
+recognition.continuous=false;
+recognition.interimResults=false;
+
+recognition.onstart=function(){
+
+micButton.classList.add("listening");
+
+setStatus("Listening...");
+
+};
+
+recognition.onresult=function(event){
+
+const transcript =
+event.results[0][0].transcript;
+
+questionBox.value=transcript;
+
+setStatus("Ready.");
+
+};
+
+recognition.onerror=function(event){
+
+console.error(event.error);
+
+setStatus(
+"Microphone error: "+event.error
+);
+
+micButton.classList.remove("listening");
+
+};
+
+recognition.onend=function(){
+
+micButton.classList.remove("listening");
+
+};
+
+micButton.addEventListener(
+"click",
+function(){
+
+recognition.start();
+
+}
+);
+
+}else{
+
+micButton.addEventListener(
+"click",
+function(){
+
+setStatus(
+"Speech recognition is not supported in this browser."
+);
+
+}
+);
+
+}
 
 
 /* STATUS */
