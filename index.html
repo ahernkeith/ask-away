@@ -158,7 +158,7 @@ ask.onclick=async()=>{
 
     if(!r.ok)throw new Error(data.error||"Something went wrong");
 
-  currentAnswer=data.answer||"I didn't receive an answer.";
+  currentAnswer = (data.answer || "I didn't receive an answer.").replace(/\*\*(.*?)\*\*/g, "$1");
     answerText.textContent=currentAnswer;
     hear.style.display="block";
   }catch(e){
