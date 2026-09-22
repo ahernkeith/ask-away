@@ -35,9 +35,10 @@ export default async function handler(req, res) {
     }
 
     const answer =
-      data.output?.[0]?.content?.find(
-        item => item.type === "output_text"
-      )?.text || "";
+  data.output
+    ?.flatMap(item => item.content || [])
+    ?.find(item => item.type === "output_text")
+    ?.text || "";
 
     return res.status(200).json({
       answer: answer
