@@ -159,7 +159,7 @@ ask.onclick=async()=>{
     if(!r.ok)throw new Error(data.error||"Something went wrong");
 
   currentAnswer=data.answer||"I didn't receive an answer.";
-    answerText.textContent=currentAnswer;
+    answerText.textContent=currentAnswer.split("**").join("");
     hear.style.display="block";
   }catch(e){
     answerText.textContent="Sorry, something went wrong. Please try again.";
