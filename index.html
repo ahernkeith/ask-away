@@ -131,7 +131,7 @@ let currentAnswer="";
 function speak(){
   if(!currentAnswer)return;
   speechSynthesis.cancel();
-  const speech=new SpeechSynthesisUtterance(currentAnswer);
+  const speech=new SpeechSynthesisUtterance(currentAnswer.split("**").join(""));
   speech.rate=1;
   speech.pitch=1;
   speechSynthesis.speak(speech);
